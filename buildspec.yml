@@ -1,0 +1,76 @@
+version: 0.2
+
+env:
+  variables:
+    AWS_REGION: ca-central-1
+    PROJECT_NAME: group6-microservices
+
+phases:
+  install:
+    commands:
+      - echo "Install phase - verifying tools"
+      - aws --version
+      - docker --version
+
+  pre_build:
+    commands:
+      - echo "Logging in to Amazon ECR in region $AWS_REGION..."
+      # Get AWS account ID
+      - ACCOUNT_ID=$(aws sts get-caller-identity --query 'Account' --output text)
+
+      # Build full ECR repo URLs for each microservice
+      - REPO_POSTS="$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/${PROJECT_NAME}-posts"
+      - REPO_THREADS="$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/${PROJECT_NAME}-threads"
+      - REPO_USERS="$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/${PROJECT_NAME}-users"
+
+      # Docker login to ECR
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin "$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
+
+      - echo "Using ECR repos:"
+      - echo "  Posts   -> $REPO_POSTS"
+      - echo "  Threads -> $REPO_THREADS"
+      - echo "  Users   -> $REPO_USERS"
+
+  build:
+    commands:
+      - echo "Building Docker images for microservices..."
+
+      # Posts microservice
+      - echo "Building posts image..."
+      - docker build -t posts-service ./posts
+      - docker tag posts-service:latest $REPO_POSTS:latest
+
+      # Threads microservice
+      - echo "Building threads image..."
+      - docker build -t threads-service ./threads
+      - docker tag threads-service:latest $REPO_THREADS:latest
+
+      # Users microservice
+      - echo "Building users image..."
+      - docker build -t users-service ./users
+      - docker tag users-service:latest $REPO_USERS:latest
+
+  post_build:
+    commands:
+      - echo "Pushing images to Amazon ECR..."
+
+      - docker push $REPO_POSTS:latest
+      - docker push $REPO_THREADS:latest
+      - docker push $REPO_USERS:latest
+
+      - echo "Forcing new deployments on ECS services..."
+      - CLUSTER="${PROJECT_NAME}-cluster"
+      - SERVICE_POSTS="${PROJECT_NAME}-posts-svc"
+      - SERVICE_THREADS="${PROJECT_NAME}-threads-svc"
+      - SERVICE_USERS="${PROJECT_NAME}-users-svc"
+
+      - aws ecs update-service --cluster $CLUSTER --service $SERVICE_POSTS --force-new-deployment
+      - aws ecs update-service --cluster $CLUSTER --service $SERVICE_THREADS --force-new-deployment
+      - aws ecs update-service --cluster $CLUSTER --service $SERVICE_USERS --force-new-deployment
+
+      - echo "Deployment triggered for all three services."
+
+artifacts:
+  files:
+    - '**/*'
+  discard-paths: yes

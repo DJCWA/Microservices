@@ -3,11 +3,15 @@ name: Terraform Deploy Infrastructure
 on:
   push:
     branches:
-      - main          # run on pushes to main
+      - main
+    paths:
+      - 'infra/**'              # only run when files under ./infra change
   pull_request:
     branches:
-      - main          # run on PRs targeting main (plan only)
-  workflow_dispatch:   # allow manual runs
+      - main
+    paths:
+      - 'infra/**'              # only run on PRs that touch ./infra
+  workflow_dispatch:             # still allow manual runs from Actions tab
 
 jobs:
   terraform:

@@ -1,0 +1,28 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "marceline",
+      "name": "Marceline Singer",
+      "bio": "Cyclist, musician"
+    },
+    {
+      "id": 2,
+      "username": "finn",
+      "name": "Finn Alberts",
+      "bio": "Adventurer and hero, defender of good"
+    },
+    {
+      "id": 3,
+      "username": "pb",
+      "name": "Paul Barium",
+      "bio": "Scientist, cake lover"
+    },
+    {
+      "id": 4,
+      "username": "jake",
+      "name": "Jake Storm",
+      "bio": "Soccer fan, sky diver"
+    }
+  ]
+}

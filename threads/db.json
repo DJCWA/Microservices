@@ -1,0 +1,19 @@
+{
+ "threads": [
+    {
+      "id": 1,
+      "title": "Did you see the Brazil game?",
+      "createdBy": 4
+    },
+    {
+      "id": 2,
+      "title": "New French bakery opening in the neighborhood tomorrow",
+      "createdBy": 3
+    },
+    {
+      "id": 3,
+      "title": "In search of a new guitar",
+      "createdBy": 1
+    }
+  ]
+}

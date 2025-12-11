@@ -31,5 +31,5 @@ variable "private_subnets" {
 variable "ecs_desired_count" {
   description = "Desired number of tasks per ECS service"
   type        = number
-  default     = 2
+  default     = 1
 }

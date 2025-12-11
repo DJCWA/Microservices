@@ -2,7 +2,7 @@ const app = require('koa')();
 const router = require('koa-router')();
 const db = require('./db.json');
 
-// Log requests
+// Log requests to the console
 app.use(function *(next){
   const start = new Date;
   yield next;

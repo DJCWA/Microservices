@@ -28,6 +28,10 @@ router.get('/', function *() {
   this.body = "Ready to receive requests";
 });
 
+app.get('/api/posts', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
 app.use(router.routes());
 app.use(router.allowedMethods());
 

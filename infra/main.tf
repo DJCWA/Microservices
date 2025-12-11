@@ -569,8 +569,8 @@ resource "aws_ecs_service" "posts" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets         = [for s in aws_subnet.private : s.id]
-    security_groups = [aws_security_group.ecs_tasks.id]
+    subnets          = [for s in aws_subnet.private : s.id]
+    security_groups  = [aws_security_group.ecs_tasks.id]
     assign_public_ip = false
   }
 
@@ -597,8 +597,8 @@ resource "aws_ecs_service" "threads" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets         = [for s in aws_subnet.private : s.id]
-    security_groups = [aws_security_group.ecs_tasks.id]
+    subnets          = [for s in aws_subnet.private : s.id]
+    security_groups  = [aws_security_group.ecs_tasks.id]
     assign_public_ip = false
   }
 
@@ -625,8 +625,8 @@ resource "aws_ecs_service" "users" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets         = [for s in aws_subnet.private : s.id]
-    security_groups = [aws_security_group.ecs_tasks.id]
+    subnets          = [for s in aws_subnet.private : s.id]
+    security_groups  = [aws_security_group.ecs_tasks.id]
     assign_public_ip = false
   }
 

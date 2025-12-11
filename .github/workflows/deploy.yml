@@ -1,0 +1,62 @@
+name: Terraform Deploy Infrastructure
+
+on:
+  push:
+    branches:
+      - main          # run on pushes to main
+  pull_request:
+    branches:
+      - main          # run on PRs targeting main (plan only)
+  workflow_dispatch:   # allow manual runs
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_REGION: ca-central-1
+
+    # Make all shell steps run from ./infra by default
+    defaults:
+      run:
+        working-directory: ./infra
+
+    steps:
+      # 1. Checkout repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Configure AWS credentials (from GitHub Secrets)
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # 3. Set up Terraform
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.5
+
+      # 4. Terraform Init (uses backend.tf in ./infra)
+      - name: Terraform Init
+        run: terraform init -input=false
+
+      # 5. Optional: Terraform Format Check
+      - name: Terraform Format
+        run: terraform fmt -check
+
+      # 6. Terraform Validate
+      - name: Terraform Validate
+        run: terraform validate
+
+      # 7. Terraform Plan
+      - name: Terraform Plan
+        run: terraform plan -input=false -out=tfplan
+
+      # 8. Terraform Apply (only on pushes to main, not PRs)
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: terraform apply -input=false -auto-approve tfplan

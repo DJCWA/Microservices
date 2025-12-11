@@ -329,7 +329,7 @@ resource "aws_lb_target_group" "posts" {
   vpc_id      = aws_vpc.this.id
 
   health_check {
-    path                = "/api/posts"
+    path                = "/api/"
     matcher             = "200-399"
     interval            = 30
     timeout             = 5
